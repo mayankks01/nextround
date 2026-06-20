@@ -1,9 +1,40 @@
+import { useRef } from "react";
 import { CircleScore, Badge, ScoreBar, RadarChart } from "./UIPrimitives";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 export default function ScorecardScreen({scorecard,onNewSession,onHistory}){
   const rc=r=>r==="Strong Candidate"?"green":r==="Interview Ready"?"teal":r==="Developing"?"amber":"coral";
+  const printRef = useRef();
+
+  const exportPDF = async () => {
+    const el = printRef.current;
+    if (!el) return;
+    // Use html2canvas to capture the node
+    const canvas = await html2canvas(el, { scale: 2 });
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    // calculate image dimensions to fit A4 with margin
+    const margin = 40;
+    const imgWidth = pageWidth - margin * 2;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    let position = margin;
+    pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
+    // If content overflows a single page, add pages
+    let remainingHeight = imgHeight - (pageHeight - margin * 2);
+    while (remainingHeight > -1) {
+      pdf.addPage();
+      position = margin - (imgHeight - remainingHeight);
+      pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
+      remainingHeight -= (pageHeight - margin * 2);
+    }
+    pdf.save(`scorecard-${scorecard.date.replace(/\s+/g, "-")}.pdf`);
+  };
+
   return(
-    <div className="nr-content">
+    <div className="nr-content" ref={printRef}>
       {/* Hero */}
       <div className="nr-card" style={{padding:"1.75rem",marginBottom:"1rem",textAlign:"center",background:"linear-gradient(160deg,#fff 0%,#FAF9FF 60%,#F6F4FE 100%)",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:-40,right:-40,width:140,height:140,borderRadius:"50%",background:"radial-gradient(circle,#EEEDFE 0%,transparent 70%)"}}/>
@@ -60,7 +91,10 @@ export default function ScorecardScreen({scorecard,onNewSession,onHistory}){
 
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
         <button className="nr-btn nr-btn-ghost" onClick={onHistory} style={{padding:"12px",fontSize:13}}><i className="ti ti-history" style={{fontSize:14}} aria-hidden/>View history</button>
-        <button className="nr-btn nr-btn-primary" onClick={onNewSession} style={{padding:"12px",fontSize:13}}><i className="ti ti-refresh" style={{fontSize:14}} aria-hidden/>New session</button>
+        <div style={{display:"flex",gap:8}}>
+          <button className="nr-btn nr-btn-secondary" onClick={exportPDF} style={{padding:"12px",fontSize:13}}><i className="ti ti-file-text" style={{fontSize:14}} aria-hidden/>Export PDF</button>
+          <button className="nr-btn nr-btn-primary" onClick={onNewSession} style={{padding:"12px",fontSize:13}}><i className="ti ti-refresh" style={{fontSize:14}} aria-hidden/>New session</button>
+        </div>
       </div>
     </div>
   );

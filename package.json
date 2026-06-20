@@ -1,0 +1,26 @@
+{
+  "name": "nextround",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "NextRound — AI-powered mock interview platform",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "server": "node server/index.js",
+    "start": "concurrently -n WEB,API -c blue,green \"npm:dev\" \"npm:server\""
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "concurrently": "^8.2.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "vite": "^8.0.16"
+  }
+}

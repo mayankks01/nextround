@@ -31,6 +31,10 @@ app.use(express.json());
 const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
 const HUGGINGFACE_KEY = process.env.HUGGINGFACE_API_KEY;
 const HUGGINGFACE_MODEL = process.env.HUGGINGFACE_MODEL || "deepseek-ai/DeepSeek-R1:fastest";
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
+const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 
 app.post("/api/messages", async (req, res) => {
   // Prefer Anthropic if provided (original behavior)
@@ -110,4 +114,76 @@ app.post("/api/messages", async (req, res) => {
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`NextRound API proxy running on http://localhost:${PORT}`);
+});
+
+/* --- OAuth routes (Google, GitHub) --- */
+app.get('/auth/:provider', (req, res)=>{
+  const provider = req.params.provider;
+  const base = `http://localhost:${PORT}`;
+  if(provider==='google'){
+    if(!GOOGLE_CLIENT_ID) return res.status(500).send('Google OAuth not configured (set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET).');
+    const redirect = encodeURIComponent(`${base}/auth/google/callback`);
+    const scope = encodeURIComponent('openid email profile');
+    const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${redirect}&response_type=code&scope=${scope}&access_type=online&prompt=select_account`;
+    return res.redirect(url);
+  }
+  if(provider==='github'){
+    if(!GITHUB_CLIENT_ID) return res.status(500).send('GitHub OAuth not configured (set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET).');
+    const redirect = encodeURIComponent(`${base}/auth/github/callback`);
+    const url = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${redirect}&scope=user:email`;
+    return res.redirect(url);
+  }
+  return res.status(404).send('Unknown provider');
+});
+
+app.get('/auth/:provider/callback', async (req, res)=>{
+  const { provider } = req.params;
+  const code = req.query.code;
+  const base = `http://localhost:${PORT}`;
+  try{
+    if(provider==='google'){
+      if(!GOOGLE_CLIENT_ID||!GOOGLE_CLIENT_SECRET) return res.status(500).send('Google OAuth not configured.');
+      const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+        method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body: new URLSearchParams({code,client_id:GOOGLE_CLIENT_ID,client_secret:GOOGLE_CLIENT_SECRET,redirect_uri:`${base}/auth/google/callback`,grant_type:'authorization_code'})
+      });
+      const tokenJson = await tokenRes.json();
+      const access = tokenJson.access_token;
+      if(!access) return res.status(500).send('Failed to obtain Google access token');
+      const userRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {headers:{Authorization:`Bearer ${access}`}});
+      const user = await userRes.json();
+      const name = user.name || user.given_name || user.email.split('@')[0];
+      const email = user.email;
+      return res.send(`<!doctype html><html><body><script>window.opener.postMessage({type:'oauth',provider:'google',user:{name:${JSON.stringify(name)},email:${JSON.stringify(email)}}},'*');window.close();</script></body></html>`);
+    }
+
+    if(provider==='github'){
+      if(!GITHUB_CLIENT_ID||!GITHUB_CLIENT_SECRET) return res.status(500).send('GitHub OAuth not configured.');
+      const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
+        method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body: JSON.stringify({client_id:GITHUB_CLIENT_ID,client_secret:GITHUB_CLIENT_SECRET,code,redirect_uri:`${base}/auth/github/callback`})
+      });
+      const tokenJson = await tokenRes.json();
+      const access = tokenJson.access_token;
+      if(!access) return res.status(500).send('Failed to obtain GitHub access token');
+      const userRes = await fetch('https://api.github.com/user', {headers:{Authorization:`token ${access}`, 'User-Agent':'NextRound'}});
+      const user = await userRes.json();
+      // email may be missing; try /user/emails
+      let email = user.email;
+      if(!email){
+        const emailsRes = await fetch('https://api.github.com/user/emails', {headers:{Authorization:`token ${access}`, 'User-Agent':'NextRound'}});
+        const emails = await emailsRes.json();
+        if(Array.isArray(emails)){
+          const primary = emails.find(e=>e.primary) || emails[0];
+          email = primary && primary.email;
+        }
+      }
+      const name = user.name || user.login || (email?email.split('@')[0]:'GitHub User');
+      return res.send(`<!doctype html><html><body><script>window.opener.postMessage({type:'oauth',provider:'github',user:{name:${JSON.stringify(name)},email:${JSON.stringify(email || '')}}},'*');window.close();</script></body></html>`);
+    }
+    return res.status(404).send('Unknown provider');
+  }catch(err){
+    console.error('OAuth callback error', err);
+    return res.status(500).send('OAuth callback failed');
+  }
 });

@@ -40,7 +40,7 @@ export default function NextRound(){
   if(!user) return <AuthScreen onAuth={handleAuth}/>;
 
   if(screen==="interview") return(
-    <div style={{height:"100vh",overflow:"hidden",display:"flex",flexDirection:"column"}}>
+    <div className="full-height-col">
       <InterviewScreen profile={profile} config={config} onDone={finishInterview}/>
     </div>
   );
@@ -54,7 +54,7 @@ export default function NextRound(){
         {screen==="session"&&<SessionScreen profile={profile} config={config} setConfig={setConfig} onStart={startInterview}/>}
         {screen==="history"&&(
           viewCard
-            ?<div className="nr-content"><button className="nr-btn nr-btn-ghost" onClick={()=>setViewCard(null)} style={{padding:"7px 14px",fontSize:12,marginBottom:"1.25rem"}}><i className="ti ti-arrow-left" style={{fontSize:13}} aria-hidden/>Back to history</button><ScorecardScreen scorecard={viewCard} onNewSession={()=>{setViewCard(null);navTo("session");}} onHistory={()=>setViewCard(null)}/></div>
+            ?<div className="nr-content"><button className="nr-btn nr-btn-ghost btn-sm btn-inline-mb" onClick={()=>setViewCard(null)}><i className="ti ti-arrow-left icon-sm" aria-hidden/>Back to history</button><ScorecardScreen scorecard={viewCard} onNewSession={()=>{setViewCard(null);navTo("session");}} onHistory={()=>setViewCard(null)}/></div>
             :<HistoryScreen history={history} onView={c=>{setViewCard(c);}}/>
         )}
         {screen==="scorecard"&&scorecard&&(

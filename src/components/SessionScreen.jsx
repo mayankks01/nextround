@@ -7,14 +7,14 @@ export default function SessionScreen({profile,config,setConfig,onStart}){
 
   return(
     <div className="nr-content">
-      <div style={{marginBottom:"1.75rem"}}>
-        <h1 style={{margin:"0 0 4px",fontSize:22,fontWeight:500,letterSpacing:"-.4px"}}>New session</h1>
+      <div className="page-header">
+        <h1>New session</h1>
         <p style={{margin:0,fontSize:14,color:"var(--color-text-secondary)"}}>Configure your interview and start when ready</p>
       </div>
 
       {/* Profile preview */}
       {profileComplete&&(
-        <div className="nr-card" style={{padding:"1rem 1.25rem",marginBottom:"1rem",display:"flex",alignItems:"center",gap:12,background:"linear-gradient(120deg,#fff 0%,#F4FAF1 100%)",borderColor:"#C9E5B0"}}>
+        <div className="nr-card profile-preview" style={{padding:"1rem 1.25rem",marginBottom:"1rem",background:"linear-gradient(120deg,#fff 0%,#F4FAF1 100%)",borderColor:"#C9E5B0"}}>
           <AvatarCircle name={profile.name||"You"} size={38}/>
           <div style={{flex:1}}>
             <p style={{margin:"0 0 3px",fontSize:13,fontWeight:500}}>{profile.name||"You"}</p>
@@ -29,13 +29,13 @@ export default function SessionScreen({profile,config,setConfig,onStart}){
       )}
 
       {/* Interview type */}
-      <div className="nr-card" style={{padding:"1.5rem",marginBottom:"1rem",borderTop:"2.5px solid #7F77DD"}}>
+        <div className="nr-card" style={{padding:"1.5rem",marginBottom:"1rem",borderTop:"2.5px solid #7F77DD"}}>
         <p className="nr-section-title">Interview type</p>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
           {SESSION_TYPES.map(st=>(
             <button key={st.id} className={`nr-type-card ${config.type===st.id?"sel":""}`} onClick={()=>setConfig(c=>({...c,type:st.id}))}>
               <div style={{display:"flex",alignItems:"center",gap:9,marginBottom:4}}>
-                <div style={{width:28,height:28,borderRadius:8,background:config.type===st.id?st.color+"20":"var(--color-background-secondary)",display:"flex",alignItems:"center",justifyContent:"center",transition:"background .15s",flexShrink:0}}>
+                <div className="type-icon" style={{background:config.type===st.id?st.color+"20":"var(--color-background-secondary)"}}>
                   <i className={`ti ${st.icon}`} style={{fontSize:14,color:config.type===st.id?st.color:"var(--color-text-tertiary)"}} aria-hidden/>
                 </div>
                 <span style={{fontSize:13.5,fontWeight:500,color:config.type===st.id?"var(--color-text-primary)":"var(--color-text-secondary)"}}>{st.label}</span>

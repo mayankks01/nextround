@@ -17,27 +17,27 @@ export default function ProfileScreen({user,profile,setProfile}){
 
   return(
     <div className="nr-content">
-      <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:"1.75rem"}}>
+      <div className="profile-actions">
         <div>
-          <h1 style={{margin:"0 0 4px",fontSize:22,fontWeight:500,letterSpacing:"-.4px"}}>Your profile</h1>
-          <p style={{margin:0,fontSize:14,color:"var(--color-text-secondary)"}}>This helps Alex personalize every interview for you</p>
+          <h1 className="page-title">Your profile</h1>
+          <p className="small-note">This helps Alex personalize every interview for you</p>
         </div>
         <button className="nr-btn nr-btn-primary" onClick={save} style={{padding:"9px 18px",fontSize:13}}>
-          {saved?<><i className="ti ti-check" style={{fontSize:13}} aria-hidden/>Saved!</>:"Save profile"}
+          {saved?<><i className="ti ti-check icon-sm" aria-hidden/>Saved!</>:"Save profile"}
         </button>
       </div>
 
       {/* Personal info */}
-      <div className="nr-card" style={{padding:"1.5rem",marginBottom:"1rem",borderTop:"2.5px solid #7F77DD"}}>
+      <div className="nr-card profile-card card-pad-lg card-border-top-purple">
         <p className="nr-section-title">Personal information</p>
-        <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:"1.25rem"}}>
+        <div className="profile-avatar-row">
           <AvatarCircle name={user.name} size={52}/>
           <div>
             <p style={{margin:"0 0 2px",fontSize:15,fontWeight:500}}>{user.name}</p>
             <p style={{margin:0,fontSize:13,color:"var(--color-text-tertiary)"}}>{user.email}</p>
           </div>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+        <div className="profile-grid">
           <div>
             <label className="nr-label">Full name</label>
             <input className="nr-input" value={profile.name||user.name} onChange={upE("name")} placeholder="Your full name"/>
@@ -58,9 +58,9 @@ export default function ProfileScreen({user,profile,setProfile}){
       </div>
 
       {/* Career details */}
-      <div className="nr-card" style={{padding:"1.5rem",marginBottom:"1rem",borderTop:"2.5px solid #1D9E75"}}>
+      <div className="nr-card card-pad-lg card-border-top-green">
         <p className="nr-section-title">Career details</p>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
+        <div className="profile-grid" style={{marginBottom:12}}>
           <div>
             <label className="nr-label">Target role</label>
             <SelectWrap value={profile.role||""} onChange={upE("role")}>
@@ -108,9 +108,9 @@ export default function ProfileScreen({user,profile,setProfile}){
       </div>
 
       {/* Skills */}
-      <div className="nr-card" style={{padding:"1.5rem",marginBottom:"1rem",borderTop:"2.5px solid #D85A30"}}>
+      <div className="nr-card card-pad-lg card-border-top-orange">
         <p className="nr-section-title">Technical skills</p>
-        <p style={{margin:"0 0 .875rem",fontSize:13,color:"var(--color-text-secondary)"}}>Select all that apply — Alex will tailor technical questions to these.</p>
+        <p className="small-note">Select all that apply — Alex will tailor technical questions to these.</p>
         <div style={{display:"flex",flexWrap:"wrap",gap:7,marginBottom:12}}>
           {skills.map(s=>(
             <button key={s} className={`nr-chip ${(profile.skills||[]).includes(s)?"sel":""}`} onClick={()=>toggleSkill(s)}>
@@ -126,7 +126,7 @@ export default function ProfileScreen({user,profile,setProfile}){
       </div>
 
       {/* Background */}
-      <div className="nr-card" style={{padding:"1.5rem",marginBottom:"1rem",borderTop:"2.5px solid #378ADD"}}>
+      <div className="nr-card card-pad-lg card-border-top-blue">
         <p className="nr-section-title">Background & experience</p>
         <div style={{display:"flex",flexDirection:"column",gap:12}}>
           <div>
@@ -135,22 +135,20 @@ export default function ProfileScreen({user,profile,setProfile}){
           </div>
           <div>
             <label className="nr-label">Key achievements / projects</label>
-            <textarea className="nr-input" value={profile.achievements||""} onChange={upE("achievements")} rows={3}
-              placeholder="Briefly describe 1–2 projects or achievements you're proud of…"
-              style={{resize:"vertical",lineHeight:1.55}}/>
+              <textarea className="nr-input textarea-resize" value={profile.achievements||""} onChange={upE("achievements")} rows={3}
+              placeholder="Briefly describe 1–2 projects or achievements you're proud of…"/>
           </div>
           <div>
             <label className="nr-label">Resume summary <span style={{color:"var(--color-text-tertiary)",fontWeight:400}}>(paste key experience)</span></label>
-            <textarea className="nr-input" value={profile.resume||""} onChange={upE("resume")} rows={4}
-              placeholder="Paste your resume text or a summary of your professional experience. Alex uses this to ask personalized questions…"
-              style={{resize:"vertical",lineHeight:1.55}}/>
+            <textarea className="nr-input textarea-resize" value={profile.resume||""} onChange={upE("resume")} rows={4}
+              placeholder="Paste your resume text or a summary of your professional experience. Alex uses this to ask personalized questions…"/>
           </div>
         </div>
       </div>
 
-      <div style={{display:"flex",justifyContent:"flex-end"}}>
+      <div className="right-actions">
         <button className="nr-btn nr-btn-primary" onClick={save} style={{padding:"11px 24px",fontSize:14}}>
-          {saved?<><i className="ti ti-check" style={{fontSize:14}} aria-hidden/>Profile saved!</>:"Save profile"}
+          {saved?<><i className="ti ti-check icon-sm" aria-hidden/>Profile saved!</>:"Save profile"}
         </button>
       </div>
     </div>

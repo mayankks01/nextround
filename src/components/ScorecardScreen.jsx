@@ -36,7 +36,7 @@ export default function ScorecardScreen({scorecard,onNewSession,onHistory}){
   return(
     <div className="nr-content" ref={printRef}>
       {/* Hero */}
-      <div className="nr-card" style={{padding:"1.75rem",marginBottom:"1rem",textAlign:"center",background:"linear-gradient(160deg,#fff 0%,#FAF9FF 60%,#F6F4FE 100%)",position:"relative",overflow:"hidden"}}>
+      <div className="nr-card score-hero">
         <div style={{position:"absolute",top:-40,right:-40,width:140,height:140,borderRadius:"50%",background:"radial-gradient(circle,#EEEDFE 0%,transparent 70%)"}}/>
         <span style={{display:"inline-flex",alignItems:"center",gap:6,background:"#fff",border:"0.5px solid var(--color-border-tertiary)",borderRadius:99,padding:"4px 14px",fontSize:11,color:"var(--color-text-tertiary)",marginBottom:"1.25rem",position:"relative"}}>
           <i className="ti ti-calendar" style={{fontSize:11}} aria-hidden/>{scorecard.domain} · {scorecard.type} · {scorecard.date}
@@ -68,7 +68,7 @@ export default function ScorecardScreen({scorecard,onNewSession,onHistory}){
               <details key={i} className="nr-details" style={{borderBottom:"0.5px solid var(--color-border-tertiary)"}}>
                 <summary style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",gap:12}}>
                   <div style={{display:"flex",alignItems:"center",gap:9}}>
-                    <span style={{width:22,height:22,borderRadius:7,background:"linear-gradient(135deg,#EEEDFE 0%,#E5E2FB 100%)",display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:500,color:"#534AB7",flexShrink:0}}>Q{i+1}</span>
+                    <span className="qa-question-badge">Q{i+1}</span>
                     <span style={{fontSize:13,color:"var(--color-text-primary)"}}>{qa.question.slice(0,68)}{qa.question.length>68?"…":""}</span>
                   </div>
                   <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
@@ -76,7 +76,7 @@ export default function ScorecardScreen({scorecard,onNewSession,onHistory}){
                     <i className="ti ti-chevron-down" style={{fontSize:12,color:"var(--color-text-tertiary)"}} aria-hidden/>
                   </div>
                 </summary>
-                <div style={{paddingBottom:12,paddingLeft:31}}>
+                <div className="qa-details">
                   <p style={{margin:"0 0 8px",fontSize:12,color:"var(--color-text-secondary)",lineHeight:1.55}}><span style={{fontWeight:500}}>Your answer:</span> {qa.answer.slice(0,200)}{qa.answer.length>200?"…":""}</p>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
                     <div style={{background:"#EAF3DE",borderRadius:8,padding:"7px 10px"}}><p style={{margin:0,fontSize:11,color:"#27500A",lineHeight:1.45}}>{qa.feedback.strength}</p></div>

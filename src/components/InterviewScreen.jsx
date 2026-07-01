@@ -72,50 +72,50 @@ export default function InterviewScreen({profile,config,onDone}){
   };
 
   return(
-    <div style={{display:"flex",flexDirection:"column",height:"100%",maxWidth:680,margin:"0 auto",padding:"1rem 1.5rem"}}>
+    <div className="interview-body">
       {/* Top bar */}
-      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",paddingBottom:12,marginBottom:12,borderBottom:"0.5px solid var(--color-border-tertiary)"}}>
-        <div style={{display:"flex",alignItems:"center",gap:10}}>
-          <div style={{width:34,height:34,borderRadius:10,background:"#EEEDFE",display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}}>
-            <i className="ti ti-robot" style={{fontSize:17,color:"#534AB7"}} aria-hidden/>
-            {loading&&!showFB&&<span style={{position:"absolute",bottom:-2,right:-2,width:8,height:8,borderRadius:"50%",background:"#1D9E75",border:"1.5px solid var(--color-background-primary)",animation:"pulse 1.5s ease-in-out infinite"}}/>}
+      <div className="interview-top">
+        <div className="flex items-center">
+          <div className="msg-robot" style={{position:"relative"}}>
+            <i className="ti ti-robot icon-sm" style={{fontSize:17,color:"#534AB7"}} aria-hidden/>
+              {loading&&!showFB&&<span className="pulse-dot"/>}
           </div>
           <div>
             <p style={{margin:0,fontSize:13,fontWeight:500}}>Alex · NextRound</p>
             <p style={{margin:0,fontSize:11,color:"var(--color-text-tertiary)"}}>{config.domain} · {config.type} · {config.difficulty}</p>
           </div>
         </div>
-        <div style={{display:"flex",alignItems:"center",gap:12}}>
+          <div className="interview-controls">
           <div style={{minWidth:110}}>
             <ProgressSteps current={qCount} total={total}/>
-            <p style={{margin:"3px 0 0",fontSize:10,color:"var(--color-text-tertiary)",textAlign:"right"}}>Q {qCount} of {total}</p>
+            <p className="progress-note">Q {qCount} of {total}</p>
           </div>
-          <button className="nr-btn nr-btn-ghost" onClick={()=>onDone(null)} style={{padding:"6px 12px",fontSize:12}}>
-            <i className="ti ti-x" style={{fontSize:12}} aria-hidden/>End
+          <button className="nr-btn nr-btn-ghost btn-sm" onClick={()=>onDone(null)}>
+            <i className="ti ti-x icon-sm" aria-hidden/>End
           </button>
         </div>
       </div>
 
       {/* Messages */}
-      <div style={{flex:1,overflowY:"auto",display:"flex",flexDirection:"column",gap:12,marginBottom:12,paddingRight:2}}>
+      <div className="message-list">
         {messages.map((m,i)=>(
-          <div key={i} style={{display:"flex",justifyContent:m.role==="ai"?"flex-start":"flex-end"}}>
-            {m.role==="ai"&&<div style={{width:26,height:26,borderRadius:8,background:"#EEEDFE",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginRight:8,marginTop:2}}><i className="ti ti-robot" style={{fontSize:12,color:"#534AB7"}} aria-hidden/></div>}
-            <div className={m.role==="ai"?"nr-msg-ai":"nr-msg-user"} style={{maxWidth:"80%",padding:"11px 15px",fontSize:14,lineHeight:1.65,color:m.role==="ai"?"var(--color-text-primary)":"#3C3489"}}>{m.content}</div>
+          <div key={i} className={`message-row ${m.role==='ai'?'ai':'user'}`}>
+            {m.role==='ai'&&<div className="msg-robot"><i className="ti ti-robot" style={{fontSize:12,color:"#534AB7"}} aria-hidden/></div>}
+            <div className={`message-bubble ${m.role==='ai'?'ai':'user'}`}>{m.content}</div>
           </div>
         ))}
         {loading&&!showFB&&(
           <div style={{display:"flex",alignItems:"center",gap:8}}>
-            <div style={{width:26,height:26,borderRadius:8,background:"#EEEDFE",display:"flex",alignItems:"center",justifyContent:"center"}}><i className="ti ti-robot" style={{fontSize:12,color:"#534AB7"}} aria-hidden/></div>
-            <div className="nr-msg-ai" style={{padding:"10px 15px"}}><LoadingDots/></div>
+            <div className="msg-robot"><i className="ti ti-robot icon-sm" style={{fontSize:12,color:"#534AB7"}} aria-hidden/></div>
+            <div className="nr-msg-ai"><LoadingDots/></div>
           </div>
         )}
         <div ref={chatEnd}/>
       </div>
 
       {/* Feedback */}
-      {showFB&&feedback&&(
-        <div className="nr-card" style={{padding:"1.25rem",marginBottom:10}}>
+        {showFB&&feedback&&(
+        <div className="nr-card card-pad-md">
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
             <div>
               <p style={{margin:"0 0 2px",fontSize:13,fontWeight:500}}>Answer feedback</p>
@@ -126,17 +126,17 @@ export default function InterviewScreen({profile,config,onDone}){
           <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:12}}>
             {Object.entries(feedback.scores).map(([k,v])=><ScoreBar key={k} label={k} score={v}/>)}
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:10}}>
-            <div style={{background:"#EAF3DE",borderRadius:10,padding:"9px 11px"}}>
-              <p style={{margin:"0 0 3px",fontSize:11,fontWeight:500,color:"#3B6D11",display:"flex",alignItems:"center",gap:4}}><i className="ti ti-check" style={{fontSize:11}} aria-hidden/>Well done</p>
-              <p style={{margin:0,fontSize:12,color:"#27500A",lineHeight:1.5}}>{feedback.strength}</p>
+          <div className="feedback-grid">
+            <div className="feedback-card" style={{background:"#EAF3DE",color:"#27500A"}}>
+              <p style={{margin:"0 0 3px",fontSize:11,fontWeight:500,display:"flex",alignItems:"center",gap:4}}><i className="ti ti-check" style={{fontSize:11}} aria-hidden/>Well done</p>
+              <p style={{margin:0,fontSize:12,lineHeight:1.5,color:"#27500A"}}>{feedback.strength}</p>
             </div>
-            <div style={{background:"#FAEEDA",borderRadius:10,padding:"9px 11px"}}>
-              <p style={{margin:"0 0 3px",fontSize:11,fontWeight:500,color:"#854F0B",display:"flex",alignItems:"center",gap:4}}><i className="ti ti-arrow-up" style={{fontSize:11}} aria-hidden/>Improve</p>
-              <p style={{margin:0,fontSize:12,color:"#633806",lineHeight:1.5}}>{feedback.improve}</p>
+            <div className="feedback-card" style={{background:"#FAEEDA",color:"#633806"}}>
+              <p style={{margin:"0 0 3px",fontSize:11,fontWeight:500,display:"flex",alignItems:"center",gap:4}}><i className="ti ti-arrow-up" style={{fontSize:11}} aria-hidden/>Improve</p>
+              <p style={{margin:0,fontSize:12,lineHeight:1.5,color:"#633806"}}>{feedback.improve}</p>
             </div>
           </div>
-          {feedback.model&&<div style={{background:"var(--color-background-secondary)",borderRadius:10,padding:"9px 12px",borderLeft:"3px solid #7F77DD",marginBottom:12}}><p style={{margin:"0 0 3px",fontSize:11,fontWeight:500,color:"var(--color-text-tertiary)"}}>Model answer</p><p style={{margin:0,fontSize:12,color:"var(--color-text-secondary)",fontStyle:"italic",lineHeight:1.55}}>{feedback.model}</p></div>}
+          {feedback.model&&<div className="model-answer"><p style={{margin:"0 0 3px",fontSize:11,fontWeight:500,color:"var(--color-text-tertiary)"}}>Model answer</p><p style={{margin:0,fontSize:12,color:"var(--color-text-secondary)",fontStyle:"italic",lineHeight:1.55}}>{feedback.model}</p></div>}
           <button className="nr-btn nr-btn-primary" onClick={qCount>=total?genCard:nextQ} disabled={loading} style={{width:"100%",padding:"11px",fontSize:13}}>
             {loading?<LoadingDots/>:<>{qCount>=total?"View scorecard":"Next question"} <i className="ti ti-arrow-right" style={{fontSize:13}} aria-hidden/></>}
           </button>
